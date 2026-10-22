@@ -1,0 +1,215 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  name        String
+  description String           @default("")
+  createdAt   DateTime         @default(now())
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  name        String
+  description String           @default("")
+  module      String
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+}
+
+model User {
+  id              String           @id @default(cuid())
+  name            String
+  email           String           @unique
+  passwordHash    String
+  roleId          String
+  role            Role             @relation(fields: [roleId], references: [id])
+  themePreference String           @default("system")
+  avatarUrl       String           @default("")
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  payableAccount  PayableAccount?
+  payments        Payment[]        @relation("PaymentUser")
+  paymentsTaken   Payment[]        @relation("PaymentRecordedBy")
+  itemCharges     ItemCharge[]
+  emailsReceived  EmailMessage[]   @relation("EmailRecipient")
+  emailsSent      EmailMessage[]   @relation("EmailSender")
+  itemsCreated    Item[]           @relation("ItemCreatedBy")
+  settingsUpdated Setting[]        @relation("SettingUpdatedBy")
+  notifications   Notification[]
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Currency {
+  id        String           @id @default(cuid())
+  code      String           @unique
+  name      String
+  symbol    String
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  settings  Setting[]
+  items     Item[]
+  accounts  PayableAccount[]
+  charges   ItemCharge[]
+  payments  Payment[]
+}
+
+model Setting {
+  id                      Int      @id @default(1)
+  currencyId              String
+  currency                Currency @relation(fields: [currencyId], references: [id])
+  appName                 String   @default("Excelorithm")
+  tagline                 String   @default("Vending Machine")
+  logoUrl                 String   @default("")
+  smtpHost                String   @default("")
+  smtpPort                Int      @default(587)
+  smtpSecure              Boolean  @default(false)
+  smtpUser                String   @default("")
+  smtpPass                String   @default("")
+  smtpFrom                String   @default("Excelorithm Vending <noreply@excelorithm.com>")
+  notificationSoundEnabled Boolean @default(true)
+  notificationSoundUrl    String   @default("")
+  paymentSoundUrl         String   @default("")
+  unselectSoundUrl        String   @default("")
+  updatedByUserId         String?
+  updatedBy               User?    @relation("SettingUpdatedBy", fields: [updatedByUserId], references: [id])
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Item {
+  id              String       @id @default(cuid())
+  title           String
+  description     String       @default("")
+  price           Float
+  buyingPrice     Float        @default(0)
+  quantity        Int          @default(0)
+  imageUrl        String
+  currencyId      String
+  currency        Currency     @relation(fields: [currencyId], references: [id])
+  isActive        Boolean      @default(true)
+  createdByUserId String?
+  createdBy       User?        @relation("ItemCreatedBy", fields: [createdByUserId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  charges         ItemCharge[]
+}
+
+model PayableAccount {
+  id              String       @id @default(cuid())
+  userId          String       @unique
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currencyId      String
+  currency        Currency     @relation(fields: [currencyId], references: [id])
+  balance         Float        @default(0)
+  totalCharged    Float        @default(0)
+  totalPaid       Float        @default(0)
+  deletedAt       DateTime?
+  deletedByUserId String?
+  deletedByName   String       @default("")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  charges         ItemCharge[]
+  payments        Payment[]
+}
+
+model ItemCharge {
+  id               String         @id @default(cuid())
+  payableAccountId String
+  payableAccount   PayableAccount @relation(fields: [payableAccountId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId           String
+  item             Item           @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  itemTitle        String
+  amount           Float
+  costAmount       Float          @default(0)
+  currencyId       String
+  currency         Currency       @relation(fields: [currencyId], references: [id])
+  deletedAt        DateTime?
+  deletedByUserId  String?
+  deletedByName    String         @default("")
+  createdAt        DateTime       @default(now())
+}
+
+model Payment {
+  id               String         @id @default(cuid())
+  payableAccountId String
+  payableAccount   PayableAccount @relation(fields: [payableAccountId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User           @relation("PaymentUser", fields: [userId], references: [id], onDelete: Cascade)
+  recordedByUserId String?
+  recordedBy       User?          @relation("PaymentRecordedBy", fields: [recordedByUserId], references: [id])
+  amount           Float
+  balanceBefore    Float
+  balanceAfter     Float
+  note             String         @default("")
+  paymentMethod    String         @default("")
+  receiptUrl       String         @default("")
+  currencyId       String
+  currency         Currency       @relation(fields: [currencyId], references: [id])
+  isFullSettlement Boolean        @default(false)
+  /// pending | paid | rejected
+  status           String         @default("paid")
+  rejectionReason  String         @default("")
+  reviewedAt       DateTime?
+  createdAt        DateTime       @default(now())
+}
+
+model EmailMessage {
+  id           String    @id @default(cuid())
+  toUserId     String
+  toUser       User      @relation("EmailRecipient", fields: [toUserId], references: [id], onDelete: Cascade)
+  toEmail      String
+  fromEmail    String
+  subject      String
+  body         String
+  status       String    @default("sent")
+  errorMessage String    @default("")
+  sentByUserId String?
+  sentBy       User?     @relation("EmailSender", fields: [sentByUserId], references: [id])
+  createdAt    DateTime  @default(now())
+  sentAt       DateTime?
+}

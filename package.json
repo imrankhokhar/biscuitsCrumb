@@ -11,19 +11,37 @@
     "setup:server": "npm --prefix server install && npm --prefix server run db:push && npm --prefix server run db:seed",
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "cf:generate": "prisma generate --schema server/prisma/schema.prisma --generator worker",
+    "cf:typecheck": "npm run cf:generate && tsc -p worker/tsconfig.json --noEmit",
+    "cf:dev": "npm run cf:generate && wrangler dev",
+    "cf:deploy": "npm run cf:generate && wrangler deploy",
+    "d1:migrate:local": "wrangler d1 migrations apply biscuitscrumb --local",
+    "d1:migrate:remote": "wrangler d1 migrations apply biscuitscrumb --remote",
+    "d1:seed": "tsx worker/scripts/seed-sql.ts && wrangler d1 execute biscuitscrumb --local --file=worker/seed.generated.sql",
+    "d1:seed:remote": "tsx worker/scripts/seed-sql.ts && wrangler d1 execute biscuitscrumb --remote --file=worker/seed.generated.sql"
   },
   "dependencies": {
+    "@prisma/adapter-d1": "^6.19.3",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^2.4.3",
     "exceljs": "^4.4.0",
+    "hono": "^4.13.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.1"
+    "react-router-dom": "^7.1.1",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "@types/bcryptjs": "^2.4.6",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "prisma": "^6.19.3",
+    "tsx": "^4.19.2",
     "typescript": "~5.7.2",
-    "vite": "^6.0.6"
+    "vite": "^6.0.6",
+    "wrangler": "^4.86.0"
   }
 }

@@ -1,0 +1,27 @@
+name = "biscuits-crumb"
+main = "worker/src/index.ts"
+compatibility_date = "2025-10-11"
+compatibility_flags = ["nodejs_compat"]
+account_id = "c572f097e1a07b2c249efa2921ec98b6"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "biscuitscrumb"
+database_id = "1f6ca043-2eef-415f-9f0c-16bec2161cd9"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "UPLOADS"
+bucket_name = "biscuits-crumb-uploads"
+
+[vars]
+CLIENT_ORIGIN = "*"
+# Secure cookies on HTTPS (workers.dev / custom domains). `wrangler dev` overrides this via .dev.vars.
+COOKIE_SECURE = "true"
+
+# pdf-parse can't run on Workers (reads fs / uses eval at import). Stub it so the bundle builds;
+# PDF statements then return a clear 400 — use CSV/Excel or POST /api/cashline/compare-json.
+[alias]
+"pdf-parse" = "./worker/src/stubs/pdf-parse.ts"
+
+# Secrets (not in this file): wrangler secret put JWT_SECRET | RECEIPT_ENCRYPTION_KEY

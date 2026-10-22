@@ -1,0 +1,21 @@
+# Copy to .dev.vars for `npm run cf:dev` (wrangler dev). Never commit .dev.vars.
+# In production set secrets with: npx wrangler secret put JWT_SECRET  (etc.)
+
+JWT_SECRET=change-me-to-a-long-random-string
+# Optional — falls back to JWT_SECRET
+RECEIPT_ENCRYPTION_KEY=
+
+# `wrangler dev` serves plain http://localhost, so keep cookies non-Secure locally
+COOKIE_SECURE=false
+CLIENT_ORIGIN=*
+
+# Admin seed password (used by `npm run d1:seed`; default admin123)
+# ADMIN_PASSWORD=admin123
+
+# Seed defaults for the Setting row. SMTP is NOT usable from Workers yet (no raw TCP) — leave blank for log-only mode.
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=Excelorithm Vending <noreply@excelorithm.com>

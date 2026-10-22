@@ -2,6 +2,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Cloudflare Worker client (wasm engine, used with @prisma/adapter-d1). Generate with:
+//   npm run cf:generate   (from the repo root)
+// Prisma >= 6.16 no longer needs the `driverAdapters` preview feature.
+generator worker {
+  provider = "prisma-client-js"
+  output   = "../../worker/generated/prisma"
+}
+
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")

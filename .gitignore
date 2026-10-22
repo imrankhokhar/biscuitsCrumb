@@ -19,3 +19,11 @@ server/dist
 server/cookies.txt
 server/login.json
 *.cookies.txt
+
+# Cloudflare Worker
+.wrangler
+.dev.vars
+.env.cloudflare
+worker/seed.generated.sql
+worker/generated
+worker/seed.generated.sql

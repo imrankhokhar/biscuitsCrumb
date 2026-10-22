@@ -254,9 +254,11 @@ async function parsePdf(buf: Buffer): Promise<SheetCredit[]> {
   return out
 }
 
-export async function parseStatementFile(
-  file: Express.Multer.File,
-): Promise<SheetCredit[]> {
+/** Structural type: satisfied by multer files (Express) and by the Worker's R2/formData uploads. */
+export async function parseStatementFile(file: {
+  originalname: string
+  buffer: Buffer
+}): Promise<SheetCredit[]> {
   const name = file.originalname.toLowerCase()
   if (name.endsWith('.csv')) {
     return parseCsv(file.buffer.toString('utf8'))

@@ -15,7 +15,7 @@ RUN npm ci
 COPY server/prisma ./prisma
 COPY server/tsconfig.json ./
 COPY server/src ./src
-RUN npx prisma generate && npm run build
+RUN npx prisma generate --generator client && npm run build
 
 # —— Runtime ——
 FROM node:20-alpine
@@ -41,7 +41,7 @@ COPY server/docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN chmod +x /docker-entrypoint.sh \
   && mkdir -p /data/db /data/uploads /data/private/receipts \
-  && npx prisma generate
+  && npx prisma generate --generator client
 
 VOLUME ["/data"]
 EXPOSE 4000

@@ -58,8 +58,8 @@ FORCE_SQLITE=0
 CLOUDFLARE_ACCOUNT_ID=c572f097e1a07b2c249efa2921ec98b6
 CLOUDFLARE_D1_DATABASE_ID=1f6ca043-2eef-415f-9f0c-16bec2161cd9
 CLOUDFLARE_API_TOKEN=your_token
-DATABASE_URL=file:/data/db/unused-placeholder.db
+DATABASE_URL=file:./prisma/dev.db
 ```
 
-Apply schema once from a machine with Wrangler: `npm run d1:migrate:remote`  
-Then seed against D1: `FORCE_SQLITE=0` + those vars → `npm --prefix server run db:seed`
+`DATABASE_URL` is only a Prisma placeholder (do **not** use `unused-placeholder.db`). Real data is in D1.  
+Apply schema once: `npm run d1:migrate:remote` then `docker compose up -d --build`.

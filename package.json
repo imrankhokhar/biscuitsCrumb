@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n api,ui -c cyan,magenta \"npm run dev:server\" \"vite\"",
-    "dev:ui": "vite",
+    "dev": "concurrently -k -n api,ui -c cyan,magenta \"npm run dev:server\" \"vite --host\"",
+    "dev:ui": "vite --host",
     "dev:server": "npm --prefix server run dev",
     "build": "tsc --noEmit && vite build",
     "build:web": "npm run build && node scripts/copy-web.mjs",

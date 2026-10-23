@@ -16,8 +16,8 @@ bucket_name = "biscuits-crumb-uploads"
 
 [vars]
 CLIENT_ORIGIN = "*"
-# Secure cookies on HTTPS (workers.dev / custom domains). `wrangler dev` overrides this via .dev.vars.
-COOKIE_SECURE = "true"
+# false until you put HTTPS (nginx + cert) in front of the server UI
+COOKIE_SECURE = "false"
 
 # pdf-parse can't run on Workers (reads fs / uses eval at import). Stub it so the bundle builds;
 # PDF statements then return a clear 400 — use CSV/Excel or POST /api/cashline/compare-json.

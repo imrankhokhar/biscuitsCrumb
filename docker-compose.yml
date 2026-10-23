@@ -11,8 +11,12 @@ services:
       NODE_ENV: production
       PORT: "4000"
       DATA_DIR: /data
-      # Durable local SQLite on volume `d1` (NOT Cloudflare D1 — no 5M/100k quotas)
+      # SQLite file (used when FORCE_SQLITE=1). Placeholder still required by Prisma generate.
       DATABASE_URL: ${DATABASE_URL:-file:/data/db/app.db}
+      FORCE_SQLITE: ${FORCE_SQLITE:-1}
+      CLOUDFLARE_ACCOUNT_ID: ${CLOUDFLARE_ACCOUNT_ID:-}
+      CLOUDFLARE_D1_DATABASE_ID: ${CLOUDFLARE_D1_DATABASE_ID:-}
+      CLOUDFLARE_API_TOKEN: ${CLOUDFLARE_API_TOKEN:-}
       PUBLIC_DIR: /app/public
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
       RECEIPT_ENCRYPTION_KEY: ${RECEIPT_ENCRYPTION_KEY:-}

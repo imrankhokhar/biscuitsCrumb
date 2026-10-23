@@ -43,12 +43,23 @@ docker compose up -d --build
 
 Open `http://YOUR_SERVER_IP:8080` — UI + API + SQLite on a Docker volume.
 
-## Database note
+## Database (auto-pick like TeamTask)
 
-| Mode | Database |
+| When | Database |
 |------|----------|
-| Local `start-web.cmd` | SQLite `server/prisma/dev.db` (via `DATABASE_URL`) |
-| Docker server | SQLite file in volume `excelorithm_d1` |
-| Cloudflare D1 Worker | Optional advanced path — see `D1_SETUP.md` (not required for TeamTask-style run) |
+| Local `start-web.cmd` | **SQLite** (`FORCE_SQLITE=1`) |
+| Server without D1 env | **SQLite** in Docker volume |
+| Server with D1 env + `FORCE_SQLITE=0` | **Cloudflare D1** over HTTP (Prisma adapter) |
 
-TeamTask can use D1 over HTTP from Node because it has a custom DB layer. This app uses **Prisma + SQLite** for the simple local/server path (same UX, solid on a VPS).
+**Live D1** — in server `.env` / Docker `.env`:
+
+```env
+FORCE_SQLITE=0
+CLOUDFLARE_ACCOUNT_ID=c572f097e1a07b2c249efa2921ec98b6
+CLOUDFLARE_D1_DATABASE_ID=1f6ca043-2eef-415f-9f0c-16bec2161cd9
+CLOUDFLARE_API_TOKEN=your_token
+DATABASE_URL=file:/data/db/unused-placeholder.db
+```
+
+Apply schema once from a machine with Wrangler: `npm run d1:migrate:remote`  
+Then seed against D1: `FORCE_SQLITE=0` + those vars → `npm --prefix server run db:seed`

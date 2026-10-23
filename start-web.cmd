@@ -33,6 +33,8 @@ echo Login: admin@excelorithm.com / admin123
 echo.
 
 cd server
+REM Always SQLite when running locally (ignore any D1 creds in the environment)
+set FORCE_SQLITE=1
 set DATABASE_URL=file:./dev.db
 set CLIENT_ORIGIN=true
 set COOKIE_SECURE=false

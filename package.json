@@ -19,7 +19,8 @@
     "d1:migrate:local": "wrangler d1 migrations apply biscuitscrumb --local",
     "d1:migrate:remote": "wrangler d1 migrations apply biscuitscrumb --remote",
     "d1:seed": "tsx worker/scripts/seed-sql.ts && wrangler d1 execute biscuitscrumb --local --file=worker/seed.generated.sql",
-    "d1:seed:remote": "tsx worker/scripts/seed-sql.ts && wrangler d1 execute biscuitscrumb --remote --file=worker/seed.generated.sql"
+    "d1:seed:remote": "tsx worker/scripts/seed-sql.ts && wrangler d1 execute biscuitscrumb --remote --file=worker/seed.generated.sql",
+    "deploy:server-d1": "bash scripts/server-deploy-d1.sh"
   },
   "dependencies": {
     "@prisma/adapter-d1": "^6.19.3",

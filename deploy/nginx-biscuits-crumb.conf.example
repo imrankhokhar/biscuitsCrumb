@@ -1,0 +1,33 @@
+# Copy to /etc/nginx/sites-available/biscuits-crumb and enable.
+# REPLACE_WORKER_URL → e.g. https://biscuits-crumb.your-subdomain.workers.dev
+# REPLACE_SERVER_NAME → your domain or _
+
+server {
+    listen 80;
+    server_name REPLACE_SERVER_NAME;
+
+    root /var/www/biscuits-crumb;
+    index index.html;
+
+    # API + uploads → Cloudflare Worker (D1 + R2 live there)
+    location /api/ {
+        proxy_pass REPLACE_WORKER_URL;
+        proxy_http_version 1.1;
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_ssl_server_name on;
+    }
+
+    location /uploads/ {
+        proxy_pass REPLACE_WORKER_URL;
+        proxy_http_version 1.1;
+        proxy_set_header Host $proxy_host;
+        proxy_ssl_server_name on;
+    }
+
+    # SPA UI served from this server
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

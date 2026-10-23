@@ -24,6 +24,7 @@ server/login.json
 .wrangler
 .dev.vars
 .env.cloudflare
+.env.cloudflare.local
 worker/seed.generated.sql
 worker/generated
 worker/seed.generated.sql

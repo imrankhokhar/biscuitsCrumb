@@ -1,32 +1,54 @@
-# Excelorithm Vending Machine
+# BiscuitsCrumb / Excelorithm Vending
 
-React + Express/Prisma (SQLite). Permission-based menus, image upload, SMTP & theme in Settings.
+React UI + Express/Prisma API. Runs like **TeamTask**: one process, one URL.
 
-## Run
+## Local (same as TeamTask `start-web.cmd`)
 
-```bash
-npm install
-npm run setup:server   # once
+Double-click or run:
 
-npm run dev:server     # API :4000
-npm run dev            # UI  :5173
+```bat
+start-web.cmd
 ```
 
-## Accounts
+Open **http://localhost:4000**
 
 - Admin: `admin@excelorithm.com` / `admin123`
-- Users: Sign up at `/signup`
 
-## What’s new
+That builds the UI, starts the API, and serves both together (no Vite proxy, no second terminal).
 
-1. **Right-side menu** — links shown only if the role has that permission  
-2. **Roles & Permissions** — `Permission` + `RolePermission` tables; assign per menu/action  
-3. **Item images** — upload from device (stored under `server/uploads`)  
-4. **SMTP in Settings** — saved on `Setting` table; used by Email  
-5. **Light/Dark theme** — per-user `themePreference` in Settings  
+### Dev mode (hot reload UI — optional)
 
-## Permission codes (examples)
+```bat
+npm run setup:server
+npm run dev:server
+```
 
-`items.view`, `items.charge`, `items.manage`, `items.create`, `items.update`, `items.delete`,  
-`payables.view`, `payables.pay`, `email.view`, `email.send`,  
-`settings.view`, `settings.update`, `settings.smtp`, `roles.view`, `roles.manage`
+Second terminal:
+
+```bat
+npm run dev
+```
+
+UI: http://localhost:5173 → proxies API to :4000
+
+## Server (Docker — same idea as TeamTask)
+
+```bash
+git clone https://github.com/imrankhokhar/biscuitsCrumb.git
+cd biscuitsCrumb
+cp .env.docker.example .env
+# set JWT_SECRET and CLIENT_ORIGIN=http://YOUR_SERVER_IP:8080
+docker compose up -d --build
+```
+
+Open `http://YOUR_SERVER_IP:8080` — UI + API + SQLite on a Docker volume.
+
+## Database note
+
+| Mode | Database |
+|------|----------|
+| Local `start-web.cmd` | SQLite `server/prisma/dev.db` (via `DATABASE_URL`) |
+| Docker server | SQLite file in volume `excelorithm_d1` |
+| Cloudflare D1 Worker | Optional advanced path — see `D1_SETUP.md` (not required for TeamTask-style run) |
+
+TeamTask can use D1 over HTTP from Node because it has a custom DB layer. This app uses **Prisma + SQLite** for the simple local/server path (same UX, solid on a VPS).

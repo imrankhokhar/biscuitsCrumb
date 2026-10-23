@@ -5,12 +5,14 @@ services:
     container_name: excelorithm-vending
     ports:
       - "${HOST_PORT:-8080}:4000"
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       PORT: "4000"
       DATA_DIR: /data
       # Durable local SQLite on volume `d1` (NOT Cloudflare D1 — no 5M/100k quotas)
-      DATABASE_URL: file:/data/db/app.db
+      DATABASE_URL: ${DATABASE_URL:-file:/data/db/app.db}
       PUBLIC_DIR: /app/public
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
       RECEIPT_ENCRYPTION_KEY: ${RECEIPT_ENCRYPTION_KEY:-}

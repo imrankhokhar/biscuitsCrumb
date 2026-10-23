@@ -10,6 +10,8 @@ RUN npm run build
 # —— Server build ——
 FROM node:20-alpine AS server-build
 WORKDIR /app/server
+# Prisma reads DATABASE_URL at generate time even for SQLite
+ENV DATABASE_URL="file:./dev.db"
 COPY server/package.json server/package-lock.json ./
 RUN npm ci
 COPY server/prisma ./prisma

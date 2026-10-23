@@ -10,7 +10,7 @@
     "build:web": "npm run build && node scripts/copy-web.mjs",
     "preview": "vite preview",
     "setup": "npm install && npm run setup:server",
-    "setup:server": "npm --prefix server install && npm --prefix server run db:push && npm --prefix server run db:seed",
+    "setup:server": "npm --prefix server install && node scripts/ensure-server-env.mjs && npm --prefix server run db:push && npm --prefix server run db:seed",
     "start": "npm --prefix server start",
     "start:web": "npm run build:web && npm --prefix server run build && npm start",
     "docker:build": "docker compose build",
